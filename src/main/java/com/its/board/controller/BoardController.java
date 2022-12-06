@@ -3,10 +3,13 @@ package com.its.board.controller;
 import com.its.board.dto.BoardDTO;
 import com.its.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -33,14 +36,48 @@ public class BoardController {
         return "boardPages/boardList";
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public String findById(@PathVariable Long id, Model model){
 //        boardService.updateCount(id);
+        boardService.updateHits(id);
         BoardDTO boardDTO = boardService.findById(id);
+//        Long countHits = (long) (boardDTO.getBoardHits() + +1);
 //        model.addAttribute("board",boardService.updateCount(id));
+//        boardService.updateHits(boardDTO.getId(),boardDTO);
         model.addAttribute("board",boardDTO);
         return "boardPages/boardDetail";
     }
+
+    @GetMapping("/passCheck")
+    public String passForm(Model model, HttpSession session){
+        String loginPassword  = (String) session.getAttribute("loginPassword");
+        BoardDTO boardDTO = boardService.findByPass(loginPassword);
+        model.addAttribute("board",boardDTO);
+        return "/boardPages/passCheck";
+    }
+
+
+//    @GetMapping ("/{boardPassword}")
+//    public ResponseEntity updateForm(@PathVariable String boardPassword){
+//       BoardDTO boardDTO = boardService.findPass(boardPassword);
+//        if (boardDTO != null){
+//            return new ResponseEntity<>(boardDTO,HttpStatus.OK);
+//        }else{
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable Long id
+            ,@RequestBody BoardDTO boardDTO){
+     boardService.update(boardDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+
+
+    }
+
+
 
 
 }
