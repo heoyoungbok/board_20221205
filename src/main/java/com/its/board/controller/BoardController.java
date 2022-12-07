@@ -30,8 +30,8 @@ public class BoardController {
 
     @GetMapping("/")
     public String findAll(Model model){
-        List<BoardDTO> boardDTOList = boardService.findAll();
-        model.addAttribute("boardList",boardDTOList);
+        List<BoardDTO> boardList = boardService.findAll();
+        model.addAttribute("boardList",boardList);
         return "boardPages/boardList";
     }
 
@@ -47,14 +47,28 @@ public class BoardController {
         return "boardPages/boardDetail";
     }
 
-    @GetMapping("/passCheck")
-    @ResponseBody private String getPassword(@RequestParam("pass")String boardPassword , Model model){
-       BoardDTO boardDTO = boardService.findByPass(boardPassword);
+
+
+    @GetMapping("/update/{id}")
+    public String updateForm(@PathVariable Long id, Model model){
+        BoardDTO boardDTO = boardService.findById(id);
         model.addAttribute("board",boardDTO);
-        return "/boardPages/passCheck";
+        return "boardPages/boardUpdate";
     }
+//    @GetMapping("/passCheck")
+//    @ResponseBody private String getPassword(@RequestParam("pass")String boardPassword , Model model){
+//       BoardDTO boardDTO = boardService.findByPass(boardPassword);
+//        model.addAttribute("board",boardDTO);
+//        return "/boardPages/passCheck";
+//    }
 
-
+        @PostMapping("/update") //오버로딩
+        public String update(@ModelAttribute BoardDTO boardDTO,Model model){
+        boardService.update(boardDTO);
+       BoardDTO boardDTO1= boardService.findById(boardDTO.getId());
+       model.addAttribute("board",boardDTO1);
+       return "boardPages/boardDetail";
+        }
 
 //    @GetMapping ("/{boardPassword}")
 //    public ResponseEntity updateForm(@PathVariable String boardPassword){
@@ -67,16 +81,33 @@ public class BoardController {
 //
 //    }
 
-    @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id
-            ,@RequestBody BoardDTO boardDTO){
-     boardService.update(boardDTO);
+//    @PutMapping("/{id}")
+//    public ResponseEntity update(@PathVariable Long id
+//            ,@RequestBody BoardDTO boardDTO){
+//     boardService.update(boardDTO);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//
+//
+//    }
+
+
+    @PutMapping("/{id}")   // 오버로딩
+    public ResponseEntity updateAxios(@RequestBody BoardDTO boardDTO){
+        boardService.update(boardDTO);
         return new ResponseEntity<>(HttpStatus.OK);
-
-
     }
 
+    @GetMapping("/delete/{id}")
+    public String deleteForm(@PathVariable Long id, Model model){
+     BoardDTO boardDTO = boardService.findById(id);
+     model.addAttribute("board",boardDTO);
+     return "boardPages/boardDetail";
+    }
 
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteAxios(@RequestBody BoardDTO boardDTO){
+        boardService.delete(boardDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

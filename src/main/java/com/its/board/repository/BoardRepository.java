@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+
 public interface BoardRepository extends JpaRepository<BoardEntity,Long> {
 
     // 조회수 증가쿼리 update board_table set board_hits =board_hits+1 where id=#{id}
@@ -19,7 +19,7 @@ public interface BoardRepository extends JpaRepository<BoardEntity,Long> {
 //    @Query(value = "update Board_table  set boardHits=boardHits+1 where id = :id",nativeQuery = true) // db쿼리를 적용할 때 뒤에 네이티브, 쿼리를 적용
     void updateHits(@Param("id") Long id);
 
-    Optional<BoardEntity> findPass(String boardPassword);
+//    Optional<BoardEntity> findPass(String boardPassword);
 
 
 //    @Modifying

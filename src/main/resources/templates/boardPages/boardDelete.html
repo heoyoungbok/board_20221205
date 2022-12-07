@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>boardDelete</title>
+</head>
+<body>
+<div class="container" id="check-form">
+    <form action="/board/delete" method="post" name="deleteForm">
+        <input type="button" value="삭제(axios)" class="btn btn-warning" th:onclick="updateAxios([[${board.id}]])">
+    </form>
+</div>
+
+</body>
+<script>
+    const deleteBoard = (deleteId) => {
+        axios({
+            method: "delete",
+            url: "/board/" + deleteId
+        }).then(res => {
+            alert("삭제 성공");
+            location.href = "/board/";
+        }).catch(err => {
+            alert("삭제 실패");
+        })
+    }
+</script>
+</html>

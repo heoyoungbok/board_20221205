@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>update</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/axios.min.js}"></script>
+<!--    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>-->
+
+</head>
+<body>
+<div class="container" id="check-form">
+    <form action="/board/update" method="post" name="updateForm">
+       <input type="text" name="id" th:value="${board.id}" class="form-control" readonly>
+        <input type="text" name="boardWriter" th:value="${board.boardWriter}" class="form-control">
+        <input type="text" name="boardPassword" id="boardPassword" class="form-control" placeholder="비밀번호">
+        <input type="text" name="boardTitle" th:value="${board.boardTitle}" class="form-control">
+        <textarea name="boardContents" cols="30" rows="10" class="form-control" th:text="${board.boardContents}"></textarea>
+        <input type="hidden" name="boardHits" th:value="${board.boardHits}">
+        <input type="button" value="수정" class="btn btn-warning" onclick="update()">
+        <input type="button" value="수정(axios)" class="btn btn-warning" onclick="updateAxios()">
+    </form>
+</div>
+</body>
+<script th:inline="javascript">
+
+   const update = () => {
+       // const id = document.getElementsByName("id")[0].value;
+       // const writer = document.getElementsByName("boardWriter")[0].value;
+       // const password = document.getElementsByName("boardPassword")[0].value;
+       // const title = document.getElementsByName("boardTitle")[0].value;
+       // const contents = document.getElementsByName("boardContents")[0].value;
+             const passDB = [[${board.boardPass}]];
+             const pass =  document.getElementById("boardPassword").value;
+       if (passDB == pass) {
+           document.updateForm.submit();
+       } else {
+           alert("비밀번호 불일치!!");
+       }
+             }
+             const updateAxios = () => {
+            const id = document.querySelector('input[name="id"]').value;
+            const title =document.getElementsByName("boardTitle")[0].value;
+            const writer = document.querySelector('input[name="boardWriter"]').value;
+            const pass = document.querySelector('input[name="boardPassword"]').value;
+            const contents = document.querySelector('input[name="boardContents"]').value;
+                 const hits = document.querySelector('input[name="boardHits"]').value;
+                 const passDB = [[${board.boardPass}]];
+                 if (pass == passDB){
+                     axios({
+                         method:"put",
+                         url:"/board/"+id,
+                         data:{
+                             id:id,
+                             boardTitle: title,
+                             boardWriter: writer,
+                             boardPassword: pass,
+                             boardContents : contents,
+                             boardHits : hits
+                         }
+                     }).then(res =>{
+                         console.log("수정 성공 ");
+                         location.href ="/board/"+id;
+
+                     }).catch(err =>{
+                         console.log("수정 실패");
+                     })
+                 }else {
+                     alert("비밀번호 불일치");
+                 }
+             }
+           //
+           // axios({
+           //     method: "put",
+           //     url: "/board/"+findId,
+           //     data:{
+           //         id:id,
+           //         writer: writer,
+           //         password:password,
+           //         title:title,
+           //         contents:contents,
+           //
+           //     }
+           // }).then(res =>{
+           //     alert("수정 성공");
+           // }).catch(res =>{
+           //     alert("수정 실패 다시 확인하여주세요")
+           // })
+   // }
+</script>
+</html>

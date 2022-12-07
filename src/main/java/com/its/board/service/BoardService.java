@@ -26,11 +26,12 @@ public class BoardService {
 
     public List<BoardDTO> findAll() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
-        List<BoardDTO> boardDTOList = new ArrayList<>();
+        List<BoardDTO> boardList = new ArrayList<>();
         for(BoardEntity boardEntity: boardEntityList){
-            boardDTOList.add(BoardDTO.toDTO(boardEntity));
+            BoardDTO boardDTO = BoardDTO.toDTO(boardEntity);
+            boardList.add(boardDTO);
         }
-        return boardDTOList;
+        return boardList;
     }
 
     public BoardDTO findById(Long id) {
@@ -69,15 +70,20 @@ public class BoardService {
 //        boardRepository.save(updateEntity);
     }
 
-
-    public BoardDTO findByPass(String boardPassword) {
-        Optional<BoardEntity> optionalBoardEntity = boardRepository.findPass(boardPassword);
-        if (optionalBoardEntity.isPresent()){
-            return BoardDTO.toDTO(optionalBoardEntity.get());
-        }else {
-            return null;
-        }
+    public void delete(BoardDTO boardDTO) {
+        BoardEntity deleteEntity = BoardEntity.toSaveEntity(boardDTO);
+        boardRepository.delete(deleteEntity);
     }
+
+
+//    public BoardDTO findByPass(String boardPassword) {
+//        Optional<BoardEntity> optionalBoardEntity = boardRepository.findPass(boardPassword);
+//        if (optionalBoardEntity.isPresent()){
+//            return BoardDTO.toDTO(optionalBoardEntity.get());
+//        }else {
+//            return null;
+//        }
+//    }
 
 
 //   public void updateCount(Long id ,BoardDTO boardDTO) {

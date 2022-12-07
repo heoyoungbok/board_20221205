@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <title>boardList</title>
   <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/axios.min.js}"></script>
+    <script th:src="@{/js/jquery.mim.js}"></script>
+    <style>
+        #board-list {
+            width: 800px;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
+<div class="container" id="board-list">
   <table class="table table-striped table-hover">
       <tr>
     <th>id</th>
@@ -15,20 +23,28 @@
     <th>Contents</th>
     <th>Hits</th>
           <th> 조회</th>
+          <th>삭제</th>
       </tr>
 
       <tr th:each="board: ${boardList}">
           <td th:text="${board.id}"></td>
           <td><a th:href="@{|/board/${board.id}|}" th:text="${board.boardTitle}"></a></td>
           <td th:text="${board.boardWriter}"></td>
-          <td th:text="${board.boardTitle}"></td>
           <td th:text="${board.boardContents}"></td>
-          <td th:text="*(#temporals.format(board.boardCreatedTime,'yyyy-MM-dd HH:mm:ss'))"></td>
+          <td th:text="*{#temporals.format(board.boardCreatedTime,'yyyy-MM-dd HH:mm:ss')}"></td>
           <td th:text="${board.boardHits}"></td>
-          <a th:href="@{|/board/${board.id}|}">조회</a>
       </tr>
+      <td>
+          <a th:href="@{|/board/${board.id}|}">조회</a>
+      </td>
+        <td>
+            <a th:href="@{|/board/delete/${board.id}|}">삭제</a>
+        </td>
 
 </table>
 </div>
 </body>
+<script>
+
+</script>
 </html>
