@@ -2,11 +2,17 @@ package com.its.board.service;
 
 import com.its.board.dto.BoardDTO;
 import com.its.board.entity.BoardEntity;
+import com.its.board.entity.BoardFileEntity;
+import com.its.board.repository.BoardFileRepository;
 import com.its.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,13 +23,34 @@ import static com.its.board.entity.BoardEntity.toSaveEntity;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    public Long save(BoardDTO boardDTO) {
-        BoardEntity boardEntity = toSaveEntity(boardDTO);
+    private final BoardFileRepository boardFileRepository;
+
+    public Long save(BoardDTO boardDTO) throws IOException {
+        if (boardDTO.getBoardFile().isEmpty()){
+            System.out.println("파일없음");
+            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+            return boardRepository.save(boardEntity).getId();
+        }else {
+            System.out.println("파일 있음");
+            MultipartFile boardFile = boardDTO.getBoardFile();
+            String originalFileName = boardFile.getOriginalFilename();
+            String storedFileName = System.currentTimeMillis()+"_"+ originalFileName;
+            String savePath = "D:\\springboot_img\\" + storedFileName;
+            boardFile.transferTo(new File(savePath));
+
+            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
+           Long savedId =boardRepository.save(boardEntity).getId();
+
+            BoardEntity entity = boardRepository.findById(savedId).get();
+            BoardFileEntity boardFileEntity =
+                    BoardFileEntity.toSaveFileEntity(entity,originalFileName,storedFileName);  //부모데이터(게시글)조회를 해오는 작업 다시 넘겨주는 것
+            boardFileRepository.save(boardFileEntity);
+            return savedId;
+        }
 //        Long saveId = boardRepository.save(BoardEntity.toSaveEntity(boardDTO)).getId();
 //        return saveId;
-        return boardRepository.save(boardEntity).getId();
     }
-
+    @Transactional
     public List<BoardDTO> findAll() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
         List<BoardDTO> boardList = new ArrayList<>();
@@ -34,6 +61,7 @@ public class BoardService {
         return boardList;
     }
 
+    @Transactional // 부모엔티티에서 자식엔티티를 직접 가져올 때 필요
     public BoardDTO findById(Long id) {
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(id);
 
@@ -70,9 +98,8 @@ public class BoardService {
 //        boardRepository.save(updateEntity);
     }
 
-    public void delete(BoardDTO boardDTO) {
-        BoardEntity deleteEntity = BoardEntity.toSaveEntity(boardDTO);
-        boardRepository.delete(deleteEntity);
+    public void delete(Long id) {
+        boardRepository.deleteById(id);
     }
 
 

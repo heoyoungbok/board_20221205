@@ -1,6 +1,8 @@
 package com.its.board;
 
 import com.its.board.dto.BoardDTO;
+import com.its.board.entity.BoardEntity;
+import com.its.board.repository.BoardRepository;
 import com.its.board.service.BoardService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.*;
@@ -18,6 +22,8 @@ import static org.assertj.core.api.Assertions.*;
 public class BoardTest {
     @Autowired
     private BoardService boardService;
+    @Autowired
+    private BoardRepository boardRepository;
 
 
 //    @Test
@@ -39,7 +45,7 @@ public class BoardTest {
     @Transactional
     @Rollback(value = true)
     @DisplayName("글작성 테스트")
-    public void boardSaveTest() {
+    public void boardSaveTest() throws IOException {
         BoardDTO boardDTO = newBoard(1);
 
         Long savedId = boardService.save(boardDTO);
@@ -53,7 +59,7 @@ public class BoardTest {
     @Transactional
     @Rollback(value = false)
     @DisplayName("글작성 여러개")
-    public void saveList(){
+    public void saveList() throws IOException {
         for (int i=1; i<20; i++){
             boardService.save(newBoard(i)); //샘플데이터로 테스트도 가능
         }
@@ -69,6 +75,18 @@ public class BoardTest {
 
     }
 
+    @Test
+    @Transactional
+    @DisplayName("연관관계 조회")
+    public void findTest(){
+        // 파일이 첨부된 게시글 조회
+        BoardEntity boardEntity = boardRepository.findById(20L).get();// 첨부 게시글 번호
+        // 첨부파일의 originalFileName 조회
+        System.out.println("boardEntity.getBoardFileEntityList()= " + boardEntity.getBoardFileEntityList().get(0).getOriginalFileName()); //부모테이블 자식테이블 조인해서 오리지날 파일 을 보여줌 (원래 db쿼리로는 두테이블 조인을 썻엇지만 jp를 쓰면 연관관계를 호출을 할 수 있음 . 그중에 오리지널 파일 네임만 쓰겟다 . )
 
+        // native query
+        //
+
+    }
 
 }

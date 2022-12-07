@@ -18,9 +18,10 @@
   <table class="table table-striped table-hover">
       <tr>
     <th>id</th>
+          <th>Title</th>
     <th>Writer</th>
-    <th>Title</th>
     <th>Contents</th>
+          <th>date</th>
     <th>Hits</th>
           <th> 조회</th>
           <th>삭제</th>
@@ -33,13 +34,17 @@
           <td th:text="${board.boardContents}"></td>
           <td th:text="*{#temporals.format(board.boardCreatedTime,'yyyy-MM-dd HH:mm:ss')}"></td>
           <td th:text="${board.boardHits}"></td>
+          <td>
+              <a th:href="@{|/board/${board.id}|}">조회</a>
+
+          </td>
+
+          <td>
+              <a th:href="@{|/board/delete/${board.id}|}">삭제</a>
+          </td>
       </tr>
-      <td>
-          <a th:href="@{|/board/${board.id}|}">조회</a>
-      </td>
-        <td>
-            <a th:href="@{|/board/delete/${board.id}|}">삭제</a>
-        </td>
+
+
 
 </table>
 </div>

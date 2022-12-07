@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -23,7 +24,7 @@ public class BoardController {
         return "boardPages/boardSave";
     }
     @PostMapping("/save")
-    public String save(@ModelAttribute BoardDTO boardDTO){
+    public String save(@ModelAttribute BoardDTO boardDTO)throws IOException {
         boardService.save(boardDTO);
         return "redirect:/board/";
     }
@@ -98,15 +99,14 @@ public class BoardController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteForm(@PathVariable Long id, Model model){
-     BoardDTO boardDTO = boardService.findById(id);
-     model.addAttribute("board",boardDTO);
-     return "boardPages/boardDetail";
+    public String deleteForm(@PathVariable Long id){
+     boardService.delete(id);
+     return "redirect:/board/";
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteAxios(@RequestBody BoardDTO boardDTO){
-        boardService.delete(boardDTO);
+    public ResponseEntity deleteAxios(@PathVariable Long id){
+        boardService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
