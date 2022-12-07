@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>passCheck</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<form action="/board/delete" name="checkForm">
+  <input type="text" name="boardPassword" id="boardPassword">
+    <input type="submit" onclick="passCheck()" value="비밀번호 확인" >
+    <input type="submit"  class="btn btn-outline-primary mr-2" value="수정" disabled>
+</form>
+</body>
+<script>
+    const passCheck = () => {
+      const pass = document.getElementById("boardPassword").value();
+      const passDB = [[${board.boardPassword}]];
+        if (pass == passDB) {
+            axios({
+                method: "get",
+                url: "/board/passCheck",
+                data: {boardPassword: pass},
+            }).then(res => {
+                checkForm.submit();
+                location.href ="/update.html"
+            }).catch(res => {
+                alert("비밀번호가 틀립니다 ");
+            })
+        }
+    }
+</script>
+</html>

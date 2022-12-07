@@ -70,8 +70,8 @@ public class BoardService {
     }
 
 
-    public BoardDTO findByPass(String loginPassword) {
-        Optional<BoardEntity> optionalBoardEntity = boardRepository.findPass(loginPassword);
+    public BoardDTO findByPass(String boardPassword) {
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findPass(boardPassword);
         if (optionalBoardEntity.isPresent()){
             return BoardDTO.toDTO(optionalBoardEntity.get());
         }else {

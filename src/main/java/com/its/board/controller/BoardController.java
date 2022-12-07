@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -49,12 +48,12 @@ public class BoardController {
     }
 
     @GetMapping("/passCheck")
-    public String passForm(Model model, HttpSession session){
-        String loginPassword  = (String) session.getAttribute("loginPassword");
-        BoardDTO boardDTO = boardService.findByPass(loginPassword);
+    @ResponseBody private String getPassword(@RequestParam("pass")String boardPassword , Model model){
+       BoardDTO boardDTO = boardService.findByPass(boardPassword);
         model.addAttribute("board",boardDTO);
         return "/boardPages/passCheck";
     }
+
 
 
 //    @GetMapping ("/{boardPassword}")

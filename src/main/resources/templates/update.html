@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>passwordCheck</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+<div class="container" id="check-form">
+    <form action="/board/update" method="post" name="checkForm">
+       <input type="text" name="id" th:value="${board.id}" class="form-control" readonly>
+        <input type="text" name="boardWriter" th:value="${board.boardWriter}" class="form-control">
+        <input type="text" name="boardPassword" id="boardPassword" class="form-control">
+        <input type="text" name="boardTitle" th:value="${board.boardTitle}" class="form-control">
+        <textarea name="boardContents" th:value="${board.boardContents}" class="form-control"></textarea>
+
+        <input type="button" value="수정(axios)" class="btn btn-warning" th:onclick="updateAxios([[${board.id}}]])">
+    </form>
+</div>
+</body>
+<script th:inline="javascript">
+
+   const updateAxios = (findId) => {
+       const id = document.getElementsByName("id")[0].value;
+       const writer = document.getElementsByName("boardWriter")[0].value;
+       const password = document.getElementsByName("boardPassword")[0].value;
+       const title = document.getElementsByName("boardTitle")[0].value;
+       const contents = document.getElementsByName("boardContents")[0].value;
+
+           axios({
+               method: "put",
+               url: "/board/"+findId,
+               data:{
+                   id:id,
+                   writer: writer,
+                   password:password,
+                   title:title,
+                   contents:contents,
+
+               }
+           }).then(res =>{
+               alert("수정 성공");
+           }).catch(res =>{
+               alert("수정 실패 다시 확인하여주세요")
+           })
+
+   }
+</script>
+</html>
