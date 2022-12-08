@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>boardDetail</title>
   <script th:src="@{/js/axios.min.js}"></script>
+  <script th:src="@{/js/jquery.mim.js}"></script>
+
+
 </head>
 <body>
 <table>
@@ -65,7 +68,7 @@
       <th>내용</th>
       <th>작성시간</th>
     </tr>
-    <td th:each="comment : ${comment.}">
+    <td th:each="comment : ${commentList}">
       <tr>
         <td>${comment.id}</td>
         <td>${comment.commentWriter}</td>
@@ -79,7 +82,42 @@
 <script th:inline="javascript">
 
   const commentSave = () => {
+    const writer = document.getElementById("commentWriter").value;
+    const contents = document.getElementById("commentContents").value;
+    const board = [[${board.id}]];
+    axios({
+      method: "post",
+      url: "/comment/save/" ,
+      data: {
+        commentWriter: writer,
+        commentContents: contents,
+        boardId : board,
+      }
 
+    }).then(res => {
+      console.log("댓글 성공");
+      let output = "<table class='table'>";
+      output += "<tr><th>댓글번호</th>";
+      output += "<th>작성자</th>";
+      output += "<th>내용</th>";
+      output += "<th>작성시간</th></tr>";
+      for (let i in commentList) {
+        output += "<tr>";
+        output += "<td>" + commentList[i].id + "</td>";
+        output += "<td>" + commentList[i].commentWriter + "</td>";
+        output += "<td>" + commentList[i].commentContents + "</td>";
+        output += "<td>" + moment(commentList[i].commentCreatedDate).format("YYYY-MM-DD HH:mm:ss") + "</td>";
+        output += "</tr>";
+      }
+      output += "</table>";
+      document.getElementById('comment-list').innerHTML = output;
+      document.getElementById('commentWriter').value = '';
+      document.getElementById('commentContents').value = '';
+
+    }).catch(err => {
+      console.log("댓글 실패");
+    })
+  alert("비정상적인 접근입니다.")
   }
 
 
