@@ -26,25 +26,34 @@ public class BoardService {
     private final BoardFileRepository boardFileRepository;
 
     public Long save(BoardDTO boardDTO) throws IOException {
-        if (boardDTO.getBoardFile().isEmpty()){
-            System.out.println("파일없음");
+//        if (boardDTO.getBoardFile().isEmpty()){ 단수 일때
+            if (boardDTO.getBoardFile().size()== 0){
+                System.out.println("파일 없음");
             BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
             return boardRepository.save(boardEntity).getId();
         }else {
-            System.out.println("파일 있음");
-            MultipartFile boardFile = boardDTO.getBoardFile();
-            String originalFileName = boardFile.getOriginalFilename();
-            String storedFileName = System.currentTimeMillis()+"_"+ originalFileName;
-            String savePath = "D:\\springboot_img\\" + storedFileName;
-            boardFile.transferTo(new File(savePath));
+                System.out.println("파일 있음");
+                // 게시글 정보를 먼저 저장하고 해당 게시글의 entity를 가져옴
+                BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
+                Long savedId =boardRepository.save(boardEntity).getId();
+                BoardEntity entity = boardRepository.findById(savedId).get();
+                // 파일이 담긴 list를 반복문으로 접근하여 하나씩 이름 가져오고, 저장용 이름 만들고
+                // 로컬 경로에 저장하고 board_file_table에 저장
+                for (MultipartFile boardFile: boardDTO.getBoardFile()){
 
-            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
-           Long savedId =boardRepository.save(boardEntity).getId();
 
-            BoardEntity entity = boardRepository.findById(savedId).get();
-            BoardFileEntity boardFileEntity =
-                    BoardFileEntity.toSaveFileEntity(entity,originalFileName,storedFileName);  //부모데이터(게시글)조회를 해오는 작업 다시 넘겨주는 것
-            boardFileRepository.save(boardFileEntity);
+//                  MultipartFile boardFile = boardDTO.getBoardFile(); 단수일때는 필요하였지만 반복문이 있어서 필요가 없음
+                    String originalFileName = boardFile.getOriginalFilename();
+                    String storedFileName = System.currentTimeMillis()+"_"+ originalFileName;
+                    String savePath = "D:\\springboot_img\\" + storedFileName;
+                    boardFile.transferTo(new File(savePath));
+
+                    BoardFileEntity boardFileEntity =
+                            BoardFileEntity.toSaveFileEntity(entity,originalFileName,storedFileName);  //부모데이터(게시글)조회를 해오는 작업 다시 넘겨주는 것
+                    boardFileRepository.save(boardFileEntity);
+                }
+
+
             return savedId;
         }
 //        Long saveId = boardRepository.save(BoardEntity.toSaveEntity(boardDTO)).getId();
