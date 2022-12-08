@@ -46,6 +46,7 @@ public class BoardDTO {
       boardDTO.setBoardHits(boardEntity.getBoardHits());
 
 
+
       // 파일 관련된 내용추가
      if (boardEntity.getFileAttached() ==1){
         //첨부파일 있음

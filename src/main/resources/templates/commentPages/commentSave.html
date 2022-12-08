@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>boardSave</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery.mim.js}"></script>
+    <style>
+        #save-form {
+            width: 800px;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="comment-save-form">
+    <form action="/comment/save" method="post" name="saveForm" enctype="multipart/form-data">
+        <input type="text" name="commentWriter" id="boardWriter" placeholder="작성자"  class="form-control">
+        <textarea name="boardContents" id="boardContents" placeholder="댓글 내용" cols="30" rows="10" class="form-control"></textarea>
+        <input type="submit" value="댓글 작성" class="btn btn-primary">
+    </form>
+</div>
+</body>
+</html>

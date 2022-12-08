@@ -42,8 +42,47 @@
 <div id="pass-check">
 
 </div>
+
+<div class="container mt-5" id="comment-write">
+  <div class="input-group-sm mb-3">
+    <div class="form-floating">
+      <input type="text" id="commentWriter" class="form-control" placeholder="작성자">
+      <label for="commentWriter">작성자</label>
+    </div>
+    <div class="form-floating">
+      <input type="text" id="commentContents" class="form-control" placeholder="내용">
+      <label for="commentContents">내용</label>
+    </div>
+    <button id="comment-write-btn" class="btn btn-secondary" onclick="commentSave()">댓글 작성</button>
+  </div>
+</div>
 </body>
+<div class="container mt-5" id="comment-list">
+  <table class="table">
+    <tr>
+      <th>댓글번호</th>
+      <th>작성자</th>
+      <th>내용</th>
+      <th>작성시간</th>
+    </tr>
+    <td th:each="comment : ${comment.}">
+      <tr>
+        <td>${comment.id}</td>
+        <td>${comment.commentWriter}</td>
+        <td>${comment.commentContents}</td>
+        <td th:text="*{#temporals.format(board.boardCreatedTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+      </tr>
+    </td>
+  </table>
+</div>
+
 <script th:inline="javascript">
+
+  const commentSave = () => {
+
+  }
+
+
 
   const listReq = () => {
     location.href ="/board/";
