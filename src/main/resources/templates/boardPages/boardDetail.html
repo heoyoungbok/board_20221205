@@ -2,10 +2,21 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <title>boardDetail</title>
   <script th:src="@{/js/axios.min.js}"></script>
-  <script th:src="@{/js/jquery.mim.js}"></script>
 
+  <style>
+
+    #board-detail {
+      width: 800px;
+      margin-top: 50px;
+    }
+
+    #comment-write {
+      width: 600px;
+    }
+  </style>
 
 </head>
 <body>
@@ -46,8 +57,7 @@
 
 </div>
 
-<div class="container mt-5" id="comment-write">
-  <div class="input-group-sm mb-3">
+  <div class="input-group-sm mb-3" id="comment-write" >
     <div class="form-floating">
       <input type="text" id="commentWriter" class="form-control" placeholder="작성자">
       <label for="commentWriter">작성자</label>
@@ -58,9 +68,13 @@
     </div>
     <button id="comment-write-btn" class="btn btn-secondary" onclick="commentSave()">댓글 작성</button>
   </div>
-</div>
+
 </body>
 <div class="container mt-5" id="comment-list">
+  <div th:if="${commentList == 'empty'}">
+    <p> 작성된 댓글이 없습니다.</p>
+  </div>
+  <div th:unless="${commentList == 'empty'}">
   <table class="table">
     <tr>
       <th>댓글번호</th>
@@ -70,13 +84,14 @@
     </tr>
     <td th:each="comment : ${commentList}">
       <tr>
-        <td>${comment.id}</td>
-        <td>${comment.commentWriter}</td>
-        <td>${comment.commentContents}</td>
-        <td th:text="*{#temporals.format(board.boardCreatedTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="${comment.id}"></td>
+        <td th:text="${comment.commentWriter}"></td>
+        <td th:text="${comment.commentContents}"></td>
+        <td th:text="*{#temporals.format(comment.commentCreatedTime,'yyyy-MM-dd HH:mm:ss')}"></td>
       </tr>
     </td>
   </table>
+</div>
 </div>
 
 <script th:inline="javascript">
@@ -84,18 +99,21 @@
   const commentSave = () => {
     const writer = document.getElementById("commentWriter").value;
     const contents = document.getElementById("commentContents").value;
-    const board = [[${board.id}]];
+    const boardId = [[${board.id}]];
     axios({
       method: "post",
-      url: "/comment/save/" ,
+      url: "/comment/save",
       data: {
         commentWriter: writer,
         commentContents: contents,
-        boardId : board,
+        boardId : boardId,
       }
 
     }).then(res => {
       console.log("댓글 성공");
+      console.log(res.data);
+       const commentList = res.data;
+       console.log("commentList",commentList);
       let output = "<table class='table'>";
       output += "<tr><th>댓글번호</th>";
       output += "<th>작성자</th>";
@@ -106,7 +124,7 @@
         output += "<td>" + commentList[i].id + "</td>";
         output += "<td>" + commentList[i].commentWriter + "</td>";
         output += "<td>" + commentList[i].commentContents + "</td>";
-        output += "<td>" + moment(commentList[i].commentCreatedDate).format("YYYY-MM-DD HH:mm:ss") + "</td>";
+        output += "<td>" + moment(commentList[i].commentCreatedTime).format("YYYY-MM-DD HH:mm:ss") + "</td>";
         output += "</tr>";
       }
       output += "</table>";
@@ -117,7 +135,7 @@
     }).catch(err => {
       console.log("댓글 실패");
     })
-  alert("비정상적인 접근입니다.")
+
   }
 
 

@@ -1,5 +1,6 @@
 package com.its.board.entity;
 
+import com.its.board.dto.CommentDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,10 +26,10 @@ public class CommentEntity extends BaseEntity {
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
-    public static CommentEntity toSaveComment(BoardEntity entity, String commentWriter, String commentContents){
+    public static CommentEntity toSaveComment(BoardEntity entity, CommentDTO commentDTO){
         CommentEntity commentEntity = new CommentEntity();
-        commentEntity.setCommentWriter(commentWriter);
-        commentEntity.setCommentContents(commentContents);
+        commentEntity.setCommentWriter(commentDTO.getCommentWriter());
+        commentEntity.setCommentContents(commentDTO.getCommentContents());
         commentEntity.setBoardEntity(entity);
         return commentEntity;
     }

@@ -4,6 +4,8 @@ import com.its.board.dto.CommentDTO;
 import com.its.board.service.BoardService;
 import com.its.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +18,13 @@ import java.util.Optional;
 @RequestMapping("/comment")
 public class CommentController {
     private final CommentService commentService;
-    private final BoardService boardService;
+//    private final BoardService boardService;
 
-    @PostMapping ("/save/{id}")
-    public @ResponseBody List<CommentDTO> save(@PathVariable Long id, @ModelAttribute CommentDTO commentDTO) {
+    @PostMapping ("/save")
+    public ResponseEntity save(@RequestBody CommentDTO commentDTO) {
        commentService.save(commentDTO);
-       List<CommentDTO> commentDTOList = commentService.findAll();
-        commentService.findById(id);
-        return commentDTOList;
+       List<CommentDTO> commentDTOList = commentService.findAll(commentDTO.getBoardId()); // 목록을 가져와서
+        return new ResponseEntity<>(commentDTOList, HttpStatus.OK); // 목록을 뿌려준다
 
 
     }

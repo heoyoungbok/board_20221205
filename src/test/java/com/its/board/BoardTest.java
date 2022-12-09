@@ -1,9 +1,13 @@
 package com.its.board;
 
 import com.its.board.dto.BoardDTO;
+import com.its.board.dto.CommentDTO;
 import com.its.board.entity.BoardEntity;
+import com.its.board.entity.CommentEntity;
 import com.its.board.repository.BoardRepository;
+import com.its.board.repository.CommentRepository;
 import com.its.board.service.BoardService;
+import com.its.board.service.CommentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -24,18 +29,21 @@ public class BoardTest {
     private BoardService boardService;
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private CommentRepository commentRepository;
 
-
-//    @Test
+    //    @Test
 //    @Transactional
 //    @Rollback(value = true)
 ////    public void boardSaveTest() 글작성 객체 만들기
     private BoardDTO newBoard(int i) {
         BoardDTO boardDTO = new BoardDTO();
-        boardDTO.setBoardWriter("testWriter" +i);
-        boardDTO.setBoardPassword("testPassword"+i);
-        boardDTO.setBoardTitle("testTitle"+i);
-        boardDTO.setBoardContents("testContents"+i); // i = 일련 번호
+        boardDTO.setBoardWriter("testWriter" + i);
+        boardDTO.setBoardPassword("testPassword" + i);
+        boardDTO.setBoardTitle("testTitle" + i);
+        boardDTO.setBoardContents("testContents" + i); // i = 일련 번호
 
         return boardDTO;
     }
@@ -60,7 +68,7 @@ public class BoardTest {
     @Rollback(value = false)
     @DisplayName("글작성 여러개")
     public void saveList() throws IOException {
-        for (int i=1; i<20; i++){
+        for (int i = 1; i < 20; i++) {
             boardService.save(newBoard(i)); //샘플데이터로 테스트도 가능
         }
 
@@ -78,7 +86,7 @@ public class BoardTest {
     @Test
     @Transactional
     @DisplayName("연관관계 조회")
-    public void findTest(){
+    public void findTest() {
         // 파일이 첨부된 게시글 조회
         BoardEntity boardEntity = boardRepository.findById(20L).get();// 첨부 게시글 번호
         // 첨부파일의 originalFileName 조회
@@ -86,7 +94,66 @@ public class BoardTest {
 
         // native query
         //
-
     }
+        @Test
+        @Transactional
+        @Rollback(value = true)
+        @DisplayName("댓글 작성테스트")
+        public void commentSaveTest() throws IOException{
+            //1. 게시글 작성 (처음부터 만든다 라는 느낌으로)
+            BoardDTO boardDTO = newBoard(100);
+            Long savedId = boardService.save(boardDTO);
+            //2 . 댓글 작성
+            CommentDTO commentDTO = newComment(savedId, 1);
+            Long commentSavedId = commentService.save(commentDTO);
+            //3 , 저장된 댓글 아이디로 댓글 조회
+            CommentEntity commentEntity = commentRepository.findById(commentSavedId).get();
+            //4. 작성자 값이 일치하는지 확인
+            assertThat(commentDTO.getCommentWriter()).isEqualTo(commentEntity.getCommentWriter());
 
+        }
+
+        @Test
+        @Transactional
+        @Rollback
+        @DisplayName("댓글 목록 테스트")
+        public void commentListTest() throws IOException {
+                // 1. 게시글작성
+            BoardDTO boardDTO = newBoard(100);
+            Long savedId = boardService.save(boardDTO);
+                // 2. 해당 게시글에 댓글 3개 작성 반복문
+
+            IntStream.rangeClosed(1,3).forEach(i -> {
+                CommentDTO commentDTO = newComment(savedId, 1);
+                commentService.save(commentDTO);
+            });
+//            CommentDTO commentDTO = new CommentDTO();
+//            commentDTO.setCommentWriter("commentWriter1");
+//            commentDTO.setCommentContents("commentContents1");
+//
+//            commentDTO.setCommentWriter("commentWriter2");
+//            commentDTO.setCommentContents("commentContents2");
+//
+//            commentDTO.setCommentWriter("commentWriter3");
+//            commentDTO.setCommentContents("commentContents3");
+
+
+//            Long commentSavedId = commentService.save(commentDTO);
+//            CommentEntity commentEntity = commentRepository.findById(commentSavedId).get();
+//                // 3. 댓글 목록 조회했을 때 목록 갯수가 3이면 테스트 통과GF
+//            assertThat(commentDTO.getCommentWriter()).isEqualTo(commentEntity.getCommentWriter());
+            List<CommentDTO> commentDTOList = commentService.findAll(savedId);
+            assertThat(commentDTOList.size()).isEqualTo(3);
+
+        }
+
+
+        private CommentDTO newComment(Long boardId, int i){
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setCommentWriter("commentWriter"+i);
+        commentDTO.setCommentContents("commentContents"+i);
+        commentDTO.setBoardId(boardId);
+        return commentDTO;
+
+        }
 }
