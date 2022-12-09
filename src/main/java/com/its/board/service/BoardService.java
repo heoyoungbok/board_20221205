@@ -7,6 +7,10 @@ import com.its.board.repository.BoardFileRepository;
 import com.its.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,7 +65,7 @@ public class BoardService {
     }
     @Transactional
     public List<BoardDTO> findAll() {
-        List<BoardEntity> boardEntityList = boardRepository.findAll();
+        List<BoardEntity> boardEntityList = boardRepository.findAll(Sort.by(Sort.Direction.DESC,"id"));
         List<BoardDTO> boardList = new ArrayList<>();
         for(BoardEntity boardEntity: boardEntityList){
             BoardDTO boardDTO = BoardDTO.toDTO(boardEntity);
@@ -109,6 +113,25 @@ public class BoardService {
 
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public Page<BoardDTO> paging(Pageable pageable) {
+        int page = pageable.getPageNumber()-1; // 페이지 -1 0인 상태라 1로 맞추기 위함
+        final int pageLimit = 3;
+        Page<BoardEntity> boardEntities = boardRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));// 보고싶은 페이지(0 ) ,한페이지 몇개 볼거냐 . 정렬
+        Page<BoardDTO> boardList = boardEntities.map(
+                // boardEntities에 담긴 boardEntity 객체를 board에 담아서
+                // baordDTO 객체로 하나씩 옮겨 담는 과정
+                board -> new BoardDTO(board.getId(),
+                        board.getBoardWriter(),
+                        board.getBoardTitle(),
+                        board.getCreatedTime(),
+                        board.getBoardHits()
+                )
+
+        );
+
+        return boardList;
     }
 
 

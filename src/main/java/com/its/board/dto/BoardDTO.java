@@ -3,6 +3,7 @@ package com.its.board.dto;
 import com.its.board.entity.BoardEntity;
 import com.its.board.entity.BoardFileEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class BoardDTO {
    private Long id;
    private String boardWriter;
@@ -32,7 +34,18 @@ public class BoardDTO {
    private List<String> originalFileName; // 리스트 타입으로 변경
    private List<String> storedFileName;
 
+   // 페이지 목록 변환을 위한 생성자
 
+   //boardTitle, boardHits, boardWriter, boardCreateredTime ,id
+
+
+   public BoardDTO(Long id, String boardWriter, String boardTitle, LocalDateTime boardCreatedTime, int boardHits) {
+      this.id = id;
+      this.boardWriter = boardWriter;
+      this.boardTitle = boardTitle;
+      this.boardCreatedTime = boardCreatedTime;
+      this.boardHits = boardHits;
+   }
 
    public static BoardDTO toDTO(BoardEntity boardEntity){
       BoardDTO boardDTO = new BoardDTO();
