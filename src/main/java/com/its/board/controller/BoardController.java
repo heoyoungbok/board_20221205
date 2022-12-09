@@ -68,10 +68,13 @@ public class BoardController {
 
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id, Model model){
+    public String findById(@PathVariable Long id, Model model,
+                           @PageableDefault(page = 1) Pageable page){
 //        boardService.updateCount(id);
         boardService.updateHits(id);
         BoardDTO boardDTO = boardService.findById(id);
+        model.addAttribute("page",page);
+
         List<CommentDTO> commentDTOList = commentService.findAll(id);
         if (commentDTOList.size() > 0) {
             model.addAttribute("commentList", commentDTOList);
