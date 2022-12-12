@@ -23,9 +23,15 @@ public class CommentEntity extends BaseEntity {
     @Column(length = 200 , nullable = false)
     private String commentContents;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private MemberEntity memberEntity;
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
+
+
+    // 업데이트 , MemberEntity memberEntity 넣어 재수정
     public static CommentEntity toSaveComment(BoardEntity entity, CommentDTO commentDTO){
         CommentEntity commentEntity = new CommentEntity();
         commentEntity.setCommentWriter(commentDTO.getCommentWriter());

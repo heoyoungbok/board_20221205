@@ -1,5 +1,6 @@
 package com.its.board.entity;
 
+import com.its.board.dto.MemberDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,13 +32,49 @@ public class MemberEntity extends BaseEntity {
     @Column(length = 30)
     private String memberPhone;
 
-    // 회원(1)-게시글(다) 연관관계 일대다관계
-    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.REMOVE,orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<BoardEntity> boardEntityList = new ArrayList<>();
 
 
-    // 회원(1)-댓글(다) 연관관계 일대다관계
-    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.REMOVE,orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<CommentEntity> commentEntityList = new ArrayList<>();
+
+        // 회원(1)-게시글(다) 연관관계 일대다관계(on delete cascade)
+//    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.REMOVE,orphanRemoval = true,fetch = FetchType.LAZY)
+//    private List<BoardEntity> boardEntityList = new ArrayList<>();
+
+        // 회원(1)-게시글(다) 연관관계 일대다관계(on delete set null) 부모데이터가 지워지면 자식데이터를 남겨둘거냐  false 디폴트 값
+        @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+        private List<BoardEntity> boardEntityList = new ArrayList<>();
+
+//    // 회원(1)-댓글(다) 연관관계 일대다관계(on delete cascade)
+//    @OneToMany(mappedBy = "memberEntity",cascade = CascadeType.REMOVE,orphanRemoval = true,fetch = FetchType.LAZY)
+//    private List<CommentEntity> commentEntityList = new ArrayList<>();
+
+        // 회원(1)-댓글(다) 연관관계 일대다관계(on delete set null)
+        @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+        private List<CommentEntity> commentEntityList = new ArrayList<>();
+
+
+        //회원 삭제시 게시글의 member_id, board_writer
+        // 댓글의 member_id , comment_writer 컬럼을 null로 세팅
+        //회원 삭제 요청이 있는 경우 먼저 실행되는 매서드
+        @PreRemove
+        private void preRemove() {
+            boardEntityList.forEach(board -> {
+                board.setMemberEntity(null); //member_table.member_id
+                board.setBoardWriter("탈퇴 회원"); // member_table.board_writer
+            });
+            commentEntityList.forEach(comment -> {
+                comment.setMemberEntity(null);
+                comment.setCommentWriter("탈퇴회원");
+            });
+        }
+
+    public static MemberEntity toSaveEntity(MemberDTO memberDTO) {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setMemberEmail(memberDTO.getMemberEmail());
+        memberEntity.setMemberPassword(memberDTO.getMemberPassword());
+        memberEntity.setMemberName(memberDTO.getMemberName());
+        memberEntity.setMemberAge(memberDTO.getMemberAge());
+        memberEntity.setMemberPhone(memberDTO.getMemberPhone());
+        return memberEntity;
+    }
 
 }

@@ -3,8 +3,10 @@ package com.its.board.service;
 import com.its.board.dto.BoardDTO;
 import com.its.board.entity.BoardEntity;
 import com.its.board.entity.BoardFileEntity;
+import com.its.board.entity.MemberEntity;
 import com.its.board.repository.BoardFileRepository;
 import com.its.board.repository.BoardRepository;
+import com.its.board.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,17 +25,20 @@ import java.util.*;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
+    private final MemberRepository memberRepository;
+    public Long save(BoardDTO boardDTO) throws IOException { //boardDTO엔 id값이 없다 . 지금 상황은 회원 이메일 과 이메일 동일하게 하는 상황
+       MemberEntity memberEntity =
+                memberRepository.findByMemberEmail(boardDTO.getBoardWriter()).get(); // 엔티티를 불러와서
 
-    public Long save(BoardDTO boardDTO) throws IOException {
 //        if (boardDTO.getBoardFile().isEmpty()){ 단수 일때
             if (boardDTO.getBoardFile() == null || boardDTO.getBoardFile().size() == 0 ){
                 System.out.println("파일 없음");
-            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO,memberEntity); // memberEntity 값을 넣어준다
             return boardRepository.save(boardEntity).getId();
         }else {
                 System.out.println("파일 있음");
                 // 게시글 정보를 먼저 저장하고 해당 게시글의 entity를 가져옴
-                BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
+                BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO,memberEntity);
                 Long savedId =boardRepository.save(boardEntity).getId();
                 BoardEntity entity = boardRepository.findById(savedId).get();
                 // 파일이 담긴 list를 반복문으로 접근하여 하나씩 이름 가져오고, 저장용 이름 만들고
@@ -101,6 +106,7 @@ public class BoardService {
 //    }
 
     public void update(BoardDTO boardDTO) {
+
         BoardEntity updateEntity = BoardEntity.toUpdateEntity(boardDTO);
         boardRepository.save(updateEntity);
 //        boardRepository.save(updateEntity);

@@ -31,6 +31,8 @@ public class BoardEntity extends BaseEntity {
 
     @Column int fileAttached; // 파일이 있음 1 없으면 0
 
+
+
     // 회원- 게시글 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -44,7 +46,8 @@ public class BoardEntity extends BaseEntity {
 
 
 
-    public static BoardEntity toSaveEntity(BoardDTO boardDTO) {
+    public static BoardEntity toSaveEntity(BoardDTO boardDTO,MemberEntity memberEntity) {   // 회원 엔티티 정보가 필요
+
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
         boardEntity.setBoardPassword(boardDTO.getBoardPassword());
@@ -52,9 +55,10 @@ public class BoardEntity extends BaseEntity {
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardHits(0);
         boardEntity.setFileAttached(0);
+        boardEntity.setMemberEntity(memberEntity); //엔티티 셋
         return boardEntity;
     }
-
+// 업데이트 , MemberEntity memberEntity 넣어 재수정
     public static BoardEntity toUpdateEntity(BoardDTO boardDTO) {
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setId(boardDTO.getId());
@@ -68,7 +72,7 @@ public class BoardEntity extends BaseEntity {
 
     }
 
-    public static BoardEntity toSaveFileEntity(BoardDTO boardDTO) {
+    public static BoardEntity toSaveFileEntity(BoardDTO boardDTO,MemberEntity memberEntity) {
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
         boardEntity.setBoardPassword(boardDTO.getBoardPassword());
@@ -76,6 +80,7 @@ public class BoardEntity extends BaseEntity {
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardHits(0);
         boardEntity.setFileAttached(1);
+        boardEntity.setMemberEntity(memberEntity);
         return boardEntity;
     }
 
