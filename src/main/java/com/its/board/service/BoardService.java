@@ -6,7 +6,6 @@ import com.its.board.entity.BoardFileEntity;
 import com.its.board.repository.BoardFileRepository;
 import com.its.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.its.board.entity.BoardEntity.toSaveEntity;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -132,6 +127,28 @@ public class BoardService {
         );
 
         return boardList;
+    }
+    @Transactional
+    public List<BoardDTO> search(String type, String q) {
+//        List<BoardDTO> byBoardTitleContainingOrBoardWriterContainingOrderByIdDesc = boardRepository.findByBoardTitleContainingOrBoardWriterContainingOrderByIdDesc(type, q);
+        List<BoardDTO> boardDTOList = new ArrayList<>(); // add 작업이 필요 하니까
+        List<BoardEntity> boardEntityList = null;
+        if(type.equals("boardWriter")){
+            boardEntityList = boardRepository.findByBoardWriterContainingOrderByIdDesc(q);
+
+        }else if (type.equals("boardTitle")){
+            boardEntityList = boardRepository.findByBoardTitleContainingOrderByIdDesc(q);
+        }else {
+            boardEntityList = boardRepository.findByBoardTitleContainingOrBoardWriterContainingOrderByIdDesc(q,q);
+        }
+
+        for(BoardEntity boardEntity : boardEntityList){
+            boardDTOList.add(BoardDTO.toDTO(boardEntity));
+        }
+        // 작성자 검색
+        // select * from board_table where board_writer like '%q%';
+        return boardDTOList;
+
     }
 
 
