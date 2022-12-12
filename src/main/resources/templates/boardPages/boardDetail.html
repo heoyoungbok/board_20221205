@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
   <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <title>boardDetail</title>
-  <script th:src="@{/js/axios.min.js}"></script>
-  <script th:src="@{/js/jquery.mim.js}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!--  <script th:src="@{/js/axios.min.js}"></script>-->
+<!--  <script th:src="@{/js/jquery.mim.js}"></script>-->
   <style>
 
-    #board-detail {
-      width: 800px;
-      margin-top: 50px;
-    }
+/*    #board-detail {*/
+/*      width: 800px;*/
+/*      margin-top: 50px;*/
+/*    }*/
 
     #comment-write {
       width: 600px;
@@ -105,14 +106,13 @@
       data: {
         commentWriter: writer,
         commentContents: contents,
-        boardId : boardId,
+        boardId : boardId
       }
-
     }).then(res => {
-      console.log("댓글 성공");
+      console.log(res);
       console.log(res.data);
-       const commentList = res.data;
-       console.log("commentList",commentList);
+      const commentList = res.data;
+      console.log("commentList", commentList);
       let output = "<table class='table'>";
       output += "<tr><th>댓글번호</th>";
       output += "<th>작성자</th>";
@@ -130,9 +130,8 @@
       document.getElementById('comment-list').innerHTML = output;
       document.getElementById('commentWriter').value = '';
       document.getElementById('commentContents').value = '';
-
     }).catch(err => {
-      console.log("댓글 실패");
+      console.log("댓글 실패" ,err);
     })
 
   }
@@ -140,12 +139,15 @@
 
 
   const listReq = () => {
-    const page = [[${page}]]
+    // const page = $("input[name='page']")
 
     // className = "page-link"
     // th:text = "${page}"
-    location.href = "/board?page=/"+page;
+     history.back();
     // location.href ="/board?=/"+page;
+
+
+
   }
 
 
